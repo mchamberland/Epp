@@ -1,0 +1,194 @@
+###############################################################################
+#
+# Example_1.egsinp, Version 1.4.3 Sat 09 Jul 2011
+#
+# -----------------------------------------------------------------------------
+#
+# Epp (Easy particle propagation)
+# Copyright (C) 2011 CancerCare Manitoba
+#
+# The latest version of Epp and additional information are available online at 
+# http://www.physics.umanitoba.ca/~elbakri/epp/
+#
+# Epp is based on the EGSnrc C++ class library which is available online at
+# http://www.irs.inms.nrc.ca/EGSnrc/pirs898/
+#
+# Epp is free software; you can redistribute it and/or modify it under the 
+# terms of the GNU General Public License as published by the Free Software 
+# Foundation; either version 2 of the License, or (at your option) any later
+# version.                                       
+#                                                                           
+# Epp is distributed in the hope that it will be useful, but WITHOUT ANY 
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more 
+# details.                              
+#                                                                           
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# -----------------------------------------------------------------------------
+#
+#   Contact:
+#
+#   Jonas Lippuner
+#   CancerCare Manitoba, Department of Medical Physics
+#   675 McDermot Ave, Winnipeg, Manitoba, R3E 0V9, Canada
+#   Email: jonas@lippuner.ca 
+#
+###############################################################################
+
+# all geometries are contained in the geometry definition key
+:start geometry definition:
+
+    # first we define air hull which is a cube
+    :start geometry:
+        library = egs_box       # refer to the class library manual
+        type = EGS_Box          # refer to the class library manual
+        box size = 15           # if only one value is specified it will be
+                                # used for all 3 dimensions thus creating a cube
+        name = air_hull         # we call this geometry object "air_hull"
+        :start media input:
+            media = AIR700ICRU  # we fill the cube with air
+        :stop media input:
+    :stop geometry:
+
+    # next we define a cylinder coaxial with the y-axis and radius 5cm
+    # NOTE: this cylinder extends indefinitely in +/-y direction
+    :start geometry:
+        library = egs_cylinders
+        type = EGS_YCylinders
+        radii = 5
+        name = water_cylinder
+    :stop geometry:
+    # to terminate the cylinder, i.e. give it a finite height, we define
+    # two planes perpendicular to the y-axis at those positions where
+    # we want to cut the cylinder; so to get a cylinder that is 12cm high
+    # and centred at the origin we need a plane at y = -6 and one at y = 6
+    :start geometry:
+        library = egs_planes
+        type = EGS_Yplanes
+        positions = -6, 6
+        name = y_planes
+    :stop geometry:
+
+    # now we combine the cylinder with the planes to crop it; the NDGeometry
+    # used here is very powerful but also quite abstract and not necessarily 
+    # intuitive, refer to the EGSnrc C++ class library manual for details
+    :start geometry:
+        library = egs_ndgeometry
+        dimensions = water_cylinder y_planes
+        name = cropped_cylinder
+        :start media input:
+            media = H2O700ICRU
+        :stop media input:
+    :stop geometry:
+
+    # now we rotate the cropped cylinder by 45 degrees around the z-axis
+    # the values of the rotation key represent rotation around the x-, y- and
+    # z-axis in radians, the rotations are applied in the order z, y then x
+    :start geometry:
+        library = egs_gtransformed
+        my geometry = cropped_cylinder
+        name = rotated_cylinder
+        :start transformation:
+            rotation = 0, 0, 0.7854          # angles in radians
+        :stop transformation:
+    :stop geometry:
+
+    # now we put the rotated cylinder inside the air hull to create our phantom
+    # NOTE: we can give a list of geometries in the "inscribed geometries" key
+    # (separated by spaces), but we have to make sure that all inscribed
+    # geometries are completely contained in the base geometry and don't overlap
+    :start geometry:
+        library = egs_genvelope
+        name = phantom
+        base geometry = air_hull
+        inscribed geometries = rotated_cylinder
+    :stop geometry:
+
+    # finally we specify which geometry object should be used for the simulation
+    simulation geometry = phantom
+
+:stop geometry definition:
+
+# all sources are contained in the source definition key
+:start source definition:
+    # we define a new source object which is a collimated source
+    :start source:
+         library = egs_collimated_source
+         name = point_src
+
+        # the source shape is the shape that radiates the particles
+        :start source shape:
+            type = point                     # we use a point as the source
+            position = 0, 0, -32.5           # shape coordinates of the point
+        :stop source shape:
+        
+        # the target shape is the collimator of the source, this is a virtual
+        # collimator, i.e. there is no leakage
+        :start target shape:
+            library = egs_rectangle          # we use a rectangle as collimator
+            rectangle = -7.5, -7.5, 7.5, 7.5 # x and y coordinates of the upper
+                                             # left and lower right corners of
+                                             # the rectangle, which is initially
+                                             # located at z = 0
+            :start transformation:
+                translation = 0, 0, -7.5     # now we translate the rectangle by
+                                             # 7.5cm in the negative z direction
+            :stop transformation:
+        :stop target shape:
+        
+        # the spectrum of the source is monochromatic (monoenergetic) with
+        # energy 38keV
+        :start spectrum:
+            type = monoenergetic
+            energy = 0.038                   # the energy is specified in MeV
+        :stop spectrum: 
+        
+        # to get a photon source we set the charge of the particles to 0
+        charge = 0
+    :stop source:
+    
+    # finally we specify which source object should be used for the simulation
+    simulation source = point_src
+:stop source definition:
+
+:start detector definition:
+    position = 0, 0, 32.5   # coordinates of the centre of the detector
+    size = 512, 512         # number of pixels in x and y direction
+    pixel size = 0.1, 0.1   # size of one pixel in x and y direction
+:stop detector definition
+
+# specifying the number of histories to be simulated
+:start run control:
+    ncase = 10000000
+:stop run control:
+
+# specifying the random number generator and initial seed values
+:start rng definition:
+    type = ranmar
+    initial seeds = 123, 4567   # the two seed values
+:stop rng definition:
+
+# specifying the simulation paramters
+:start MC transport parameter:
+    Global ECUT = 0
+    Global PCUT = 0
+    Global SMAX = 1e10
+    ESTEPE = 0.25
+    XIMAX = 0.5
+    Boundary crossing algorithm = EXACT
+    Skin depth for BCA = 0
+    Electron-step algorithm = PRESTA-II
+    Spin effects = On
+    Brems angular sampling = Simple
+    Brems cross sections = BH
+    Bound Compton scattering = Off
+    Pair angular sampling = Simple
+    Photoelectron angular sampling = Off
+    Rayleigh scattering = On
+    Atomic relaxations = On
+    Electron impact ionization = On
+:stop MC transport parameter:
+

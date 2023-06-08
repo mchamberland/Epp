@@ -1,0 +1,88 @@
+/******************************************************************************
+ *
+ * INSTALL, Version 1.4.3 Sat 09 Jul 2011
+ *
+ * ----------------------------------------------------------------------------
+ *
+ * Epp (Easy particle propagation)
+ * Copyright (C) 2011 CancerCare Manitoba
+ *
+ * The latest version of Epp and additional information are available online at 
+ * http://www.physics.umanitoba.ca/~elbakri/epp/
+ *
+ * Epp is based on the EGSnrc C++ class library which is available online at
+ * http://www.irs.inms.nrc.ca/EGSnrc/pirs898/
+ *
+ * Epp is free software; you can redistribute it and/or modify it under the 
+ * terms of the GNU General Public License as published by the Free Software 
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.                                       
+ *                                                                           
+ * Epp is distributed in the hope that it will be useful, but WITHOUT ANY 
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more 
+ * details.                              
+ *                                                                           
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * ----------------------------------------------------------------------------
+ *
+ *   Contact:
+ *
+ *   Jonas Lippuner
+ *   CancerCare Manitoba, Department of Medical Physics
+ *   675 McDermot Ave, Winnipeg, Manitoba, R3E 0V9, Canada
+ *   Email: jonas@lippuner.ca 
+ *
+ *****************************************************************************/
+
+
+ Installation
+ ============
+ 
+ Epp has been designed to run in a Linux environment and has only been tested 
+ under Linux. The source code of Epp is available online at <URL>.
+ 
+ 
+ Requirements
+ ============
+ 
+ Epp is a user code for EGSnrc and thus requires EGSnrc to be installed and 
+ fully configured. This version of Epp was only tested with EGSnrc V4 2.3.1. 
+ EGSnrc can be obtained free of charge from 
+ http://irs.inms.nrc.ca/software/egsnrc/. Since Epp is derived from the EGSnrc 
+ C++ class library, the class library must have been successfully compiled prior 
+ to compiling Epp. The EGSnrc C++ class library is part of the EGSnrc 
+ distribution package and should be automatically compiled during the 
+ installation process.
+ 
+ 
+ Installing Epp
+ ==============
+ 
+ To install Epp on your Linux system, follow these steps:
+ 
+ 1.	Download (http://irs.inms.nrc.ca/software/egsnrc/) and install the EGSnrc V4
+    code system version 2.3.1 and make sure it is fully configured, i.e. all the 
+    environment variables are set, this may require you to logout and login 
+    again; note that you need to have a FORTRAN, C and C++ compiler installed on 
+    your system, see the EGSnrc website for more information
+
+ 2. Download (http://www.physics.umanitoba.ca/~elbakri/epp) the Epp source code 
+    and extract the folder Epp into your EGS_HOME directory (typically egsnrc 
+    or egsnrc_mp)
+    
+ 3. Change into the Epp directory, e.g. /home/user/egsnrc/Epp, and run make,
+    for example:
+    $ cd /home/user/egsnrc/Epp
+    $ make
+
+
+ If the above steps have all been successfully completed, Epp should now be 
+ completely installed on your system and ready to be used.
+ 
+
+
+

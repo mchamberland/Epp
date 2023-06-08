@@ -1,0 +1,105 @@
+/******************************************************************************
+ *
+ * Changes, Version 1.4.3 Sat 09 Jul 2011
+ *
+ * ----------------------------------------------------------------------------
+ *
+ * Epp (Easy particle propagation)
+ * Copyright (C) 2011 CancerCare Manitoba
+ *
+ * The latest version of Epp and additional information are available online at 
+ * http://www.physics.umanitoba.ca/~elbakri/epp/
+ *
+ * Epp is based on the EGSnrc C++ class library which is available online at
+ * http://www.irs.inms.nrc.ca/EGSnrc/pirs898/
+ *
+ * Epp is free software; you can redistribute it and/or modify it under the 
+ * terms of the GNU General Public License as published by the Free Software 
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.                                       
+ *                                                                           
+ * Epp is distributed in the hope that it will be useful, but WITHOUT ANY 
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more 
+ * details.                              
+ *                                                                           
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * ----------------------------------------------------------------------------
+ *
+ *   Contact:
+ *
+ *   Jonas Lippuner
+ *   CancerCare Manitoba, Department of Medical Physics
+ *   675 McDermot Ave, Winnipeg, Manitoba, R3E 0V9, Canada
+ *   Email: jonas@lippuner.ca 
+ *
+ *****************************************************************************/
+
+ Version 1.0.0 Tue 21 Jul 2009
+    - First stable version with all core features implemented.
+    
+ Version 1.1.0 Fri 24 Jul 2009
+    - Added feature for recording deposited energy on the detector.
+    
+ Version 1.2.0 Mon 31 Aug 2009
+    - Added support for reading *.egsphant files with the #egsphant directive.
+    
+ Version 1.2.1 Wed 02 Sep 2009
+    - Fixed a bug that caused some scattered photons to be falsely labelled as 
+      primary photons.
+    - Fixed a bug that caused a substantial number of primary photons to be 
+      falsely labelled as Compton scattered when bound Compton scattering was 
+      turned on.
+      
+ Version 1.2.2 Tue 03 Nov 2009
+    - Changed propagation of photons to the detector to remove an offset of the 
+      whole image on the detector.
+      
+ Version 1.3.0 Fri 20 Nov 2009
+    - Dropped XML support for input files and regressed to the original EGSnrc 
+      C++ Classs Library input format.
+      
+ Version 1.3.1 Wed 25 Nov 2009
+    - Fixed some minor bugs related to the names of the output files and fixed a 
+      bug related to importing *.egsphant files from a different directory.
+      
+ Version 1.3.2 Wed 03 Feb 2010
+    - Fixed a bug related to running Epp in parallel.
+    
+ Version 1.4.0 Thu 29 Apr 2010
+    - Updated to use version 2.3.1 of EGSnrc V4.
+    - Reduced the changes made to the original EGSnrc C++ class library source 
+      code.
+    - Changed the optimization level to 1 instead of 3 to avoid an artefact that 
+      would otherwise show up on generated images. 
+    - Fixed a bug that prevented the command line arguments -h and --help from 
+      having any effect.
+    - Introduced a check to make sure that the input and pegs file are 
+      specified.
+    - Added a new command line option -pr or --parse that parses a given file 
+      and resolves all #include and #egsphant directives, which is very useful 
+      to view an input file that uses these directives with egs_view, for 
+      example.
+      
+ Version 1.4.1 Thu 03 Jun 2010
+    - Fixed bug that falsely labelled some photons as Compton scattered when 
+      bound Compton scatter-ing is turned on. This fix was introduced in version 
+      1.2.1, but it got lost.
+      
+ Version 1.4.3 Sat 09 Jul 2011
+    - Fixed a bug that propagated photons to the detector backwards when the 
+      photon would not hit the detector going in its current direction. Now only 
+      photons that hit the detector going forward (in the current direction when 
+      they leave the simulation geometry) are scored on the detector. 
+    - Removed restriction that only propagated photons to the detector that were 
+      going in the positive z direction. Now Epp can be used to analyze 
+      backscatter as well.
+    - Fixed phantom_10cm.egsphant, which was an air cylinder inside water 
+      instead of a water cylinder inside air.
+
+ Version 1.4.3 Sat 09 Jul 2011
+    - Fixed a bug that did not free some allocated memory.
+

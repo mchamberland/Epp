@@ -1,0 +1,179 @@
+###############################################################################
+#
+# Example_2.egsinp, Version 1.4.3 Sat 09 Jul 2011
+#
+# -----------------------------------------------------------------------------
+#
+# Epp (Easy particle propagation)
+# Copyright (C) 2011 CancerCare Manitoba
+#
+# The latest version of Epp and additional information are available online at 
+# http://www.physics.umanitoba.ca/~elbakri/epp/
+#
+# Epp is based on the EGSnrc C++ class library which is available online at
+# http://www.irs.inms.nrc.ca/EGSnrc/pirs898/
+#
+# Epp is free software; you can redistribute it and/or modify it under the 
+# terms of the GNU General Public License as published by the Free Software 
+# Foundation; either version 2 of the License, or (at your option) any later
+# version.                                       
+#                                                                           
+# Epp is distributed in the hope that it will be useful, but WITHOUT ANY 
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS 
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more 
+# details.                              
+#                                                                           
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+#
+# -----------------------------------------------------------------------------
+#
+#   Contact:
+#
+#   Jonas Lippuner
+#   CancerCare Manitoba, Department of Medical Physics
+#   675 McDermot Ave, Winnipeg, Manitoba, R3E 0V9, Canada
+#   Email: jonas@lippuner.ca 
+#
+###############################################################################
+
+:start geometry definition:
+
+    # first we define air volume which will fill the space between the source
+    # and the phantom
+    :start geometry:
+        library = egs_box
+        type = EGS_Box
+        box size = 15, 15, 40
+        name = air
+        :start media input:
+            media = AIR700ICRU
+        :stop media input:
+    :stop geometry:
+
+    # now we translate the air volume to get it between the source and phantom
+    :start geometry:
+        library = egs_gtransformed
+        my geometry = air
+        name = translated_air
+        :start transformation:
+            translation = 0, 0, -12.5
+        :stop transformation:
+    :stop geometry:
+
+    # next we import the existing egsphant file phantom_10cm.egsphant which is 
+    # in the same directory as this input file and call it "voxels", the file
+    # contains a cubic voxelized phantom with side length 10cm
+    
+    #egsphant voxels phantom_10cm.egsphant
+
+    # now we rotate the voxelized phantom by 15 degrees around the y-axis
+    :start geometry:
+        library = egs_gtransformed
+        my geometry = voxels
+        name = rotated_voxels
+        :start transformation:
+            rotation = 0, 0.2618, 0          # angles in radians
+        :stop transformation:
+    :stop geometry:
+
+    # now we put the rotated voxels inside the air volume
+    :start geometry:
+        library = egs_genvelope
+        name = phantom
+        base geometry = translated_air
+        inscribed geometries = rotated_voxels
+    :stop geometry:
+
+    # finally we specify which geometry object should be used for the simulation
+    simulation geometry = phantom
+
+:stop geometry definition:
+
+# all sources are contained in the source definition key
+:start source definition:
+    # we define a new source object which is a collimated source
+    :start source:
+         library = egs_collimated_source
+         name = point_src
+
+        # the source shape is the shape that radiates the particles
+        :start source shape:
+            type = point                     # we use a point as the source
+            position = 0, 0, -32.5           # shape coordinates of the point
+        :stop source shape:
+        
+        # the target shape is the collimator of the source, this is a virtual
+        # collimator, i.e. there is no leakage
+        :start target shape:
+            library = egs_rectangle          # we use a rectangle as collimator
+            rectangle = -7.5, -7.5, 7.5, 7.5 # x and y coordinates of the upper
+                                             # left and lower right corners of
+                                             # the rectangle, which is initially
+                                             # located at z = 0
+            :start transformation:
+                translation = 0, 0, -7.5     # now we translate the rectangle by
+                                             # 7.5cm in the negative z direction
+            :stop transformation:
+        :stop target shape:
+        
+        # the spectrum of the source is monochromatic (monoenergetic) with
+        # energy 38keV
+        :start spectrum:
+            type = monoenergetic
+            energy = 0.038                   # the energy is specified in MeV
+        :stop spectrum: 
+        
+        # to get a photon source we set the charge of the particles to 0
+        charge = 0
+    :stop source:
+    
+    # finally we specify which source object should be used for the simulation
+    simulation source = point_src
+:stop source definition:
+
+:start dose calculation:
+    phantom = voxels      # the name of the voxelized volume in which the dose 
+                          # should be recorded
+:stop dose calculation:
+
+:start output options:
+    count = n             # turn off binary photon count output
+    img-cnt = n           # turn off image photon count output
+    dose = textbin        # turn on dose output and specifies that the dose 
+                          # should be written to a text and a binary file
+:stop output options:
+
+# specifying the number of histories to be simulated
+:start run control:
+    ncase = 10000000
+:stop run control:
+
+# specifying the random number generator and initial seed values
+:start rng definition:
+    type = ranmar
+    initial seeds = 123, 4567   # the two seed values
+:stop rng definition:
+
+# specifying the simulation paramters
+:start MC transport parameter:
+    Global ECUT = 0
+    Global PCUT = 0
+    Global SMAX = 1e10
+    ESTEPE = 0.25
+    XIMAX = 0.5
+    Boundary crossing algorithm = EXACT
+    Skin depth for BCA = 0
+    Electron-step algorithm = PRESTA-II
+    Spin effects = On
+    Brems angular sampling = Simple
+    Brems cross sections = BH
+    Bound Compton scattering = Off
+    Pair angular sampling = Simple
+    Photoelectron angular sampling = Off
+    Rayleigh scattering = On
+    Atomic relaxations = On
+    Electron impact ionization = On
+:stop MC transport parameter:
+
