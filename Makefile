@@ -60,14 +60,7 @@ EGS_BASE_APPLICATION = egs_advanced_application
 
 CPP_SOURCES = $(C_ADVANCED_SOURCES)
 
-# Files that a lot of stuff depends upon
-common_h_files1 = $(EGS_INTERFACE)egs_interface2.h $(HEN_HOUSE)lib$(DSEP)$(my_machine)$(DSEP)egs_config1.h
-
-common_h_files2 = $(ABS_EGSPP)egs_libconfig.h \
-                  $(ABS_EGSPP)egs_base_geometry.h $(ABS_EGSPP)egs_vector.h \
-                  $(ABS_EGSPP)egs_math.h $(ABS_EGSPP)egs_functions.h \
-                  $(ABS_EGSPP)egs_base_source.h $(ABS_EGSPP)egs_input.h \
-                  $(ABS_EGSPP)egs_object_factory.h
+include $(HEN_HOUSE)makefiles$(DSEP)cpp_makefile
 
 # Dependencies
 dep_Epp_advanced_application = array_sizes.h \
@@ -78,9 +71,5 @@ dep_Epp_advanced_application = array_sizes.h \
 
 dep_user_code = $(user_dependencies) array_sizes.h $(common_h_files1) \
         $(common_h_files2)
-
-dep_egs_interface = $(EGS_INTERFACE)egs_interface2.c $(common_h_files1)
-
-include $(HEN_HOUSE)makefiles$(DSEP)cpp_makefile
 
 .PHONY: clean library
