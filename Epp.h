@@ -38,6 +38,11 @@
  *
  *****************************************************************************/
 
+#ifndef EPP_
+#define EPP_
+
+// egs++ dependencies
+#include "egs_advanced_application.h"
 #include "egs_interface2.h"
 #include "egs_functions.h"
 #include "egs_input.h"
@@ -49,10 +54,10 @@
 #include "geometry/egs_nd_geometry/egs_nd_geometry.h"
 #include "egs_interpolator.h"
 #include "egs_scoring.h"
+
+// local dependencies
 #include "bmp.c"
 
-#include "egs_application_for_Epp.cpp"
-#include "egs_advanced_application.cpp"
 
 #define OPTION_NONE     ((uchar)0x00)     // 0x00
 #define OPTION_PRIMARY  ((uchar)(1 << 0)) // 0x01
@@ -142,7 +147,6 @@ protected:
 
 
 private:
-    bool getArgument(int &argc, char **argv, const char *name1, const char *name2, string &arg);
     uchar readOptions(string opt, uchar def);
     uchar readOptionsFromInput(EGS_Input *input, string name, uchar def);
 
@@ -186,4 +190,5 @@ private:
     */
 };
 
+#endif
 

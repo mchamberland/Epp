@@ -42,19 +42,6 @@
 
 #include "Epp.h"
 
-// has been copied from egs_application.cpp
-bool EppApplication::getArgument(int &argc, char **argv, 
-        const char *name1, const char *name2, string &arg) {
-    string n1(name1), n2(name2);
-    for(int j=1; j<argc-1; j++) {
-        if( n1 == argv[j] || n2 == argv[j] ) {
-            arg = argv[j+1]; 
-            return true;
-        }
-    }
-    return false;
-}
-
 uchar EppApplication::readOptions(string opt, uchar def) {
     uchar o = OPTION_NONE;
     bool optionFound = false;
@@ -191,8 +178,7 @@ int EppApplication::initScoring() {
     // check whether previous output files exist in the output directory
     string outPath = getOutputPrefix();
     char cwd[1024];
-    char *dummyCwd = getcwd(cwd, 1024); // store return value in dummy variable to suppress compiler warning
-    string dirPath = getDir(string(cwd) + '/' + outPath);
+    string dirPath = getWorkDir() + '/' + outPath;
     DIR *dir = opendir(dirPath.c_str());
     struct dirent *dp;
     size_t filecount = 0;
@@ -842,7 +828,7 @@ void EppApplication::outputResults() {
     // scale the data with the average weight to get the correct values
     double averageWeight = 0.0;
     if (totalWeight > 0) {
-        averageWeight = totalWeight / (double)run->getNcase();
+        averageWeight = totalWeight / (double) run->getNcase();
         for (int i = 0; i < OUTIDX_LENGTH; i++) {
             if ((photon_counters & outputOptions[i]) > 0) {
                 for (int p = 0; p < numberOfPixels; p++)
@@ -871,10 +857,12 @@ void EppApplication::outputResults() {
         double *doseErrors = (double*)malloc(nreg * sizeof(double));
 
         for (int r = 0; r < nreg; r++) {
+            int med = doseGeometry->medium(r);
+            EGS_Float realRho = doseGeometry->getRelativeRho(r)*the_media->rho[med];
             double e, de;
             dose->currentResult(r + offset, e, de);            
             doseErrors[r] = e > 0 ? de / e : 1;
-            doseValues[r] = e * ((double)current_case * MeV / (doseGeometry->getMass(r) * 1e-3 * averageWeight));
+            doseValues[r] = e * ((double)current_case * MeV / (doseGeometry->getVolume(r) * realRho * 1e-3 * averageWeight));
         }
         
         if (doseTextOutput) {

@@ -49,7 +49,7 @@ user_dependencies = Epp.cpp
 
 # optimization level 1 is required to avoid an odd artifact that would otherwise
 # occur in the propagation
-opt = -O1 -ffast-math
+#opt = -O1 -ffast-math
 
 # The directory of the egs++ libraries relative to HEN_HOUSE
 egspp = egs++
