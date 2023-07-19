@@ -40,6 +40,7 @@
 
 
 include $(EGS_CONFIG)
+include $(SPEC_DIR)egspp1.spec
 include $(SPEC_DIR)egspp_$(my_machine).conf
 
 
@@ -51,50 +52,13 @@ user_dependencies = Epp.cpp
 # occur in the propagation
 #opt = -O1 -ffast-math
 
-# The directory of the egs++ libraries relative to HEN_HOUSE
-egspp = egs++
-EGSPP = egs++$(DSEP)
+# Specify from which base class this application is being derived.
+# This has the effect of automatically compiling the base application
+# class and including it into the list of object files.
+#
+EGS_BASE_APPLICATION = egs_advanced_application
 
-# Relative path from the egs++ directory to the directory where object 
-# files and DSOs (DLLs) get put
-dso = dso$(DSEP)$(my_machine)
-
-# The absolute path to the egs++ libraries
-abs_dso = $(HEN_HOUSE)$(EGSPP)$(dso)
-ABS_DSO = $(abs_dso)$(DSEP)
-
-# The absolute path to the main egs++ library directory
-abs_egspp = $(HEN_HOUSE)$(egspp)
-ABS_EGSPP = $(abs_egspp)$(DSEP)
-
-# The absolute path to the C/C++ interface directory
-egs_interface = $(HEN_HOUSE)interface
-EGS_INTERFACE = $(egs_interface)$(DSEP)
-
-# Include directories to look for include files
-INCL = -I. -I$(HEN_HOUSE)lib$(DSEP)$(my_machine) -I$(abs_egspp) -I$(egs_interface)
-
-CPP_SOURCES = $(EGS_SOURCEDIR)egsnrc.macros $(MACHINE_MACROS) \
-            $(EGS_INTERFACE)egs_c_interface2.macros \
-            $(EGSPP_USER_MACROS) \
-            $(MACHINE_MORTRAN) $(EGS_SOURCEDIR)egs_utilities.mortran \
-            $(EGS_INTERFACE)egs_c_interface2.mortran \
-            $(EGS_SOURCEDIR)transportp.macros \
-            $(EGS_SOURCEDIR)get_inputs.mortran\
-            $(EGS_SOURCEDIR)egsnrc.mortran
-
-# The standard set of object files needed
-egs_files = $(EGS_BASE_APPLICATION) egsnrc egs_interface2
-egs_objects = $(addsuffix _$(my_machine).$(obje),$(egs_files))
-
-# The user objects
-user_objects = $(addsuffix _$(my_machine).$(obje),$(user_files))
-
-# The target (the executable)
-target = $(USER_BINDIR)$(USER_CODE)$(EXE)
-
-# A standard rule for compiling C++ files
-object_rule = $(CXX) $(INCL) $(DEF1) $(DEF_USER) $(opt) -c $(COUT)$@ $<
+CPP_SOURCES = $(C_ADVANCED_SOURCES)
 
 # Files that a lot of stuff depends upon
 common_h_files1 = $(EGS_INTERFACE)egs_interface2.h $(HEN_HOUSE)lib$(DSEP)$(my_machine)$(DSEP)egs_config1.h
@@ -117,29 +81,6 @@ dep_user_code = $(user_dependencies) array_sizes.h $(common_h_files1) \
 
 dep_egs_interface = $(EGS_INTERFACE)egs_interface2.c $(common_h_files1)
 
-
-$(target): $(user_objects) $(egs_objects)
-	$(F77) $(opt) $(EOUT)$@ $^ $(lib_link1) $(user_lib_path) $(link2_prefix)egspp$(link2_suffix) $(fortran_libs)
-
-
-$(USER_CODE)_$(my_machine).$(obje): $(dep_user_code)
-
-egs_interface2_$(my_machine).$(obje): $(dep_egs_interface)
-	$(object_rule)
-
-egsnrc_$(my_machine).$(obje): egsnrc_$(my_machine).F array_sizes.h
-	$(F77) $(FC_FLAGS) $(FDEFS) -c $(FOUT)$@ $<
-
-egsnrc_$(my_machine).F: $(CPP_SOURCES)
-	@echo Mortran compiling EGSnrc sources ...
-	@$(MORTRAN_EXE) -s -i -d $(MORTRAN_DATA) -f $(CPP_SOURCES) -o7 $@ \
-           -o8 $(@:.F=.mortlst)
-
-$(user_objects):
-	$(object_rule)
-
-clean:
-	$(REMOVE) mortjob.mortran egsnrc_$(my_machine).F egsnrc_$(my_machine).mortlst
-	$(REMOVE) $(target) $(user_objects) $(egs_objects)
+include $(HEN_HOUSE)makefiles$(DSEP)cpp_makefile
 
 .PHONY: clean library

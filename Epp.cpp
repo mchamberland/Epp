@@ -712,6 +712,7 @@ int EppApplication::ausgab(int iarg) {
             }
         }
     }
+    return 0;
 }
 
 int EppApplication::outputData() {

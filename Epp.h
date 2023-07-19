@@ -48,6 +48,7 @@
 #include "egs_input.h"
 #include "egs_library.h"
 #include "egs_rndm.h"
+#include "egs_run_control.h"
 #include "egs_base_source.h"
 #include "egs_base_geometry.h"
 #define EXPLICIT_XYZ
