@@ -42,6 +42,126 @@
 
 #include "Epp.h"
 
+void printHelpMessage() {
+    char ESC = 27;
+
+    printf("\n");
+    printf("%c[1mUsage:%c[0m  Epp -i INPUT_FILE -p PEGS_FILE [OPTIONS]\n", ESC, ESC);
+    printf("\n");
+    printf("        %c[1mINPUT_FILE%c[0m is the name of the input file for the simulation;\n", ESC, ESC);
+    printf("        the input file must be in the Epp user code directory\n");
+    printf("\n");
+    printf("        %c[1mPEGS_FILE%c[0m is the path to the PEGS4 file to be used for the simulation;\n", ESC, ESC);
+    printf("        the path must either be absolute or relative to $HEN_HOUSE/pegs4/data/\n");
+    printf("        or $EGS_HOME/pegs4/data/.\n");
+    printf("\n");
+    printf("        %c[1mOPTIONS%c[0m are additional command line arguments and switches from the\n", ESC, ESC);
+    printf("        list below (optional)\n");
+    printf("\n");
+    printf("%c[1mRefer to the user manual (Epp User Manual.pdf) for more information.%c[0m\n", ESC, ESC);
+    printf("\n");
+    printf("The following additional command line arguments can be used to change the\n");
+    printf("behavior of the program:\n");
+    printf("\n");
+    printf("-o OUTPUT_FILE              Sets the names of the output files to %c[1mOUTPUT_FILE%c[0m.\n", ESC, ESC);
+    printf("--output OUTPUT_FILE        By default the name of the input file is used.\n");
+    printf("\n");
+    printf("-pr INPUT_FILE              Epp will parse %c[1mINPUT_FILE%c[0m and resolve all #include\n", ESC, ESC);
+    printf("--parse INPUT_FILE          and #egsphant directives and create a single\n");
+    printf("                            completed input file. This is useful to check and\n");
+    printf("                            debug #include directives and to create an input\n");
+    printf("                            file whose geometry can be viewed with egs_view, as\n");
+    printf("                            egs_view does not understand #include and #egsphant.\n");
+    printf("\n");
+    printf("                            This option overrides all other options except -h\n");
+    printf("                            and --help.\n");
+    printf("\n");
+    printf("-oP FLAGS                   Specifies which photon output files will be created.\n");
+    printf("--output-photout FLAGS      %c[1mFLAGS%c[0m is any combination of the following letters\n", ESC, ESC);
+    printf("                            (any order, without separators):\n");
+    printf("                            - %c[1mn%c[0m: none (turn off all files)\n", ESC, ESC);
+    printf("                            - %c[1ma%c[0m: all (turn on all files)\n", ESC, ESC);
+    printf("                            - %c[1mp%c[0m: primary\n", ESC, ESC);
+    printf("                            - %c[1mc%c[0m: Compton\n", ESC, ESC);
+    printf("                            - %c[1mm%c[0m: multiple\n", ESC, ESC);
+    printf("                            - %c[1mr%c[0m: Rayleigh\n", ESC, ESC);
+    printf("                            - %c[1mt%c[0m: total\n", ESC, ESC);
+    printf("\n");
+    printf("                            Note that %c[1mn%c[0m overrides all other flags and %c[1ma%c[0m\n", ESC, ESC, ESC, ESC);
+    printf("                            overrides the individual flags (%c[1mp%c[0m, %c[1mc%c[0m, %c[1mm%c[0m, %c[1mr%c[0m, %c[1mt%c[0m).\n", ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC, ESC);
+    printf("\n");
+    printf("                            %c[1mExamples%c[0m\n", ESC, ESC);
+    printf("                            %c[1mmcr%c[0m:  only multiple, Compton and Rayleigh files will\n", ESC, ESC);
+    printf("                                  be created\n");
+    printf("                            %c[1mptn%c[0m:  no files will be created because %c[1mn%c[0m overrides\n", ESC, ESC, ESC, ESC);
+    printf("                                  all other flags\n");
+    printf("                            %c[1man%c[0m:   no files will be created because %c[1mn%c[0m overrides\n", ESC, ESC, ESC, ESC);
+    printf("                                  all other flags\n");
+    printf("                            %c[1mcart%c[0m: all files will be created because %c[1ma%c[0m overrides\n", ESC, ESC, ESC, ESC);
+    printf("                                  all individual flags\n");
+    printf("\n");
+    printf("                            The default is %c[1mn%c[0m (none).\n", ESC, ESC);
+    printf("\n");
+    printf("-oC FLAGS                   Specifies which count output files will be created.\n");
+    printf("--output-count FLAGS        See above for the description of %c[1mFLAGS%c[0m.\n", ESC, ESC);
+    printf("                            The default is %c[1ma%c[0m (all).\n", ESC, ESC);
+    printf("\n");
+    printf("-oE FLAGS                   Specifies which energy output files will be created.\n");
+    printf("--output-energy FLAGS       See above for the description of %c[1mFLAGS%c[0m.\n", ESC, ESC);
+    printf("                            The default is %c[1mn%c[0m (none).\n", ESC, ESC);
+    printf("\n");
+    printf("-oIC FLAGS                  Specifies which image count output files will be\n");
+    printf("--output-img-cnt FLAGS      created.\n");
+    printf("                            See above for the description of %c[1mFLAGS%c[0m.\n", ESC, ESC);
+    printf("                            The default is %c[1ma%c[0m (all).\n", ESC, ESC);
+    printf("\n");
+    printf("-oIE FLAGS                  Specifies which image energy output files will be\n");
+    printf("--output-img-e FLAGS        created.\n");
+    printf("                            See above for the description of %c[1mFLAGS%c[0m.\n", ESC, ESC);
+    printf("                            The default is %c[1mn%c[0m (none).\n", ESC, ESC);
+    printf("\n");
+    printf("-oD OPTION                  Specifies that the dose should be calculated in a\n");
+    printf("--output-dose OPTION        voxelized geometry specified in the input file.\n");
+    printf("                            %c[1mOPTION%c[0m is be one of the following:\n", ESC, ESC);
+    printf("                            - %c[1mtext%c[0m: write dose to text file\n", ESC, ESC);
+    printf("                            - %c[1mbin%c[0m: write dose to binary file\n", ESC, ESC);
+    printf("                            - %c[1mtextbin%c[0m: write dose to text and binary files\n", ESC, ESC);
+    printf("\n");
+    printf("                            Any other value for %c[1mOPTION%c[0m will result in no dose\n", ESC, ESC);
+    printf("                            output being created.\n");
+    printf("\n");
+    printf("                            The default is no value and thus no dose output.\n");
+    printf("\n");
+    printf("-e PATH                     Sets the %c[1mEGS_HOME%c[0m path to %c[1mPATH%c[0m instead of the\n", ESC, ESC, ESC, ESC);
+    printf("--egs-home PATH             standard path defined by the %c[1mEGS_HOME%c[0m environment\n", ESC, ESC);
+    printf("                            variable.\n");
+    printf("\n");
+    printf("-H PATH                     Sets the %c[1mHEN_HOUSE%c[0m path to %c[1mPATH%c[0m instead of the\n", ESC, ESC, ESC, ESC);
+    printf("--hen-house PATH            standard path defined by the %c[1mHEN_HOUSE%c[0m environment\n", ESC, ESC);
+    printf("                            variable.\n");
+    printf("\n");
+    printf("-b                          Runs the simulation in batch mode, i.e. an *.egslog\n");
+    printf("--batch                     output file will be created.\n");
+    printf("\n");
+    printf("-P N                        Specifies the number (%c[1mN%c[0m) of parallel jobs.\n", ESC, ESC);
+    printf("--parallel N\n");
+    printf("\n");
+    printf("-j I                        Specifies the index (%c[1mI%c[0m) of this process in the list\n", ESC, ESC);
+    printf("--job I                     of all processes running in parallel.\n");
+    printf("\n");
+    printf("-s                          Specifies that a simple run control object should be\n");
+    printf("--simple-run                used for parallel runs. This option is useful if\n");
+    printf("                            there are issues with locking the run control file\n");
+    printf("                            otherwise required for parallel runs.\n");
+    printf("\n");
+    printf("-h                          Prints this message.\n");
+    printf("--help\n");
+    printf("                            This option overrides all other options.\n");
+    printf("\n");
+    
+    egsFatal("\n");
+}
+
 uchar EppApplication::readOptions(string opt, uchar def) {
     uchar o = OPTION_NONE;
     bool optionFound = false;
@@ -99,6 +219,20 @@ EppApplication::EppApplication(int argc, char **argv) : EGS_AdvancedApplication(
     // set default values
     doseTextOutput = false;
     doseBinOutput = false;
+
+    bool print_help = false;
+    for(int j=1; j<argc; j++) {
+        string tmp = argv[j];
+        if( tmp == "-h" || tmp == "--help" ) {
+            print_help = true;
+            break;
+        }
+    }
+    
+    if (print_help) {
+        printHelpMessage();
+        exit(0);
+    }
     
     string optStr;
     if (getArgument(argc, argv, "-oP", "--output-photout", optStr)) {
